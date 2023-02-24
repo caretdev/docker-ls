@@ -22,6 +22,7 @@ jobs:
         run: go test -v ./cli/... ./lib/...
 
   build:
+    needs: test
     strategy:
       matrix:
         arch:
@@ -42,5 +43,5 @@ jobs:
         if: github.event_name == 'push'
         uses: softprops/action-gh-release@v1
         with:
-          name: Latest
+          tag: latest
           files: release/archives/*
