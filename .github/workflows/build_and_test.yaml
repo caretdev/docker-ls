@@ -22,6 +22,7 @@ jobs:
         run: go test -v ./cli/... ./lib/...
 
   build:
+    if: github.event_name == 'push'
     needs: test
     strategy:
       matrix:
@@ -40,8 +41,7 @@ jobs:
         run: ./release.sh ${{ matrix.arch.name }}
 
       - name: Publish
-        if: github.event_name == 'push'
         uses: softprops/action-gh-release@v1
         with:
-          tag: latest
+          tag_name: latest
           files: release/archives/*
