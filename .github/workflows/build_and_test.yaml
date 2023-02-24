@@ -5,42 +5,42 @@ on:
   - pull_request
 
 jobs:
-
   test:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    - name: Set up Go
-      uses: actions/setup-go@v3
-      with:
-        go-version: 1.15
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.15
 
-    - name: Build
-      run: go build -v ./cli/... ./lib/...
+      - name: Build
+        run: go build -v ./cli/... ./lib/...
 
-    - name: Test
-      run: go test -v ./cli/... ./lib/...
+      - name: Test
+        run: go test -v ./cli/... ./lib/...
 
   build:
     strategy:
       matrix:
-        - arch: darwin
-          on: darwin-latest
-        - arch: linux
-          on: ubuntu-latest
-        - arch: windows
-          on: windows-latest
-    runs-on: ${{ matrix.on }}
+        arch:
+          - name: darwin
+            on: darwin-latest
+          - name: linux
+            on: ubuntu-latest
+          - name: windows
+            on: windows-latest
+    runs-on: ${{ matrix.arch.on }}
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    - name: Build
-      run: ./release.sh ${{ matrix.on }}
+      - name: Build
+        run: ./release.sh ${{ matrix.arch.name }}
 
-    - name: Publish
-      if: github.event_name == 'push'
-      uses: softprops/action-gh-release@v1
-      with:
-        name: Latest
-        files: release/archives/*
+      - name: Publish
+        if: github.event_name == 'push'
+        uses: softprops/action-gh-release@v1
+        with:
+          name: Latest
+          files: release/archives/*
