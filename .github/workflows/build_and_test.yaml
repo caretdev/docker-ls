@@ -6,13 +6,13 @@ on:
 
 jobs:
 
-  build:
+  test:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Set up Go
-      uses: actions/setup-go@v2
+      uses: actions/setup-go@v3
       with:
         go-version: 1.15
 
@@ -22,8 +22,21 @@ jobs:
     - name: Test
       run: go test -v ./cli/... ./lib/...
 
-    - name: Build all
-      run: ./release.sh
+  build:
+    strategy:
+      matrix:
+        - arch: darwin
+          on: darwin-latest
+        - arch: linux
+          on: ubuntu-latest
+        - arch: windows
+          on: windows-latest
+    runs-on: ${{ matrix.on }}
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Build
+      run: ./release.sh ${{ matrix.on }}
 
     - name: Publish
       if: github.event_name == 'push'

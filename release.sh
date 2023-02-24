@@ -1,6 +1,9 @@
 #!/bin/bash
 
 os_list="linux darwin windows"
+if [ ! -z "$@" ]; then
+    os_list=$@
+fi
 
 arch_linux="amd64 arm64"
 arch_darwin="amd64 arm64"
