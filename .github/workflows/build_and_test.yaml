@@ -4,20 +4,65 @@ on:
   - push
   - pull_request
 
-jobs:
+permissions:
+  contents: write  
 
-  build:
+jobs:
+  test:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
-    - name: Set up Go
-      uses: actions/setup-go@v2
-      with:
-        go-version: 1.15
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.15
 
-    - name: Build
-      run: go build -v ./cli/... ./lib/...
+      - name: Build
+        run: go build -v ./cli/... ./lib/...
 
-    - name: Test
-      run: go test -v ./cli/... ./lib/...
+      - name: Test
+        run: go test -v ./cli/... ./lib/...
+
+  build:
+    if: github.event_name == 'push'
+    needs: test
+    strategy:
+      matrix:
+        arch:
+          - name: "darwin"
+            on: macos-latest
+          - name: "linux windows"
+            on: ubuntu-latest
+    runs-on: ${{ matrix.arch.on }}
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build
+        shell: bash
+        run: ./release.sh ${{ matrix.arch.name }}
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.arch.name }}
+          path: release/archives/*
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v3
+        with: 
+          name: darwin
+          path: darwin
+      - uses: actions/download-artifact@v3
+        with: 
+          name: "linux windows"
+          path: linux_windows
+      - name: Publish
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: latest
+          files: |
+            darwin/*
+            linux_windows/*
