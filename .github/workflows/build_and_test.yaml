@@ -21,3 +21,13 @@ jobs:
 
     - name: Test
       run: go test -v ./cli/... ./lib/...
+
+    - name: Build all
+      run: ./release.sh
+
+    - name: Publish
+      if: github.event_name == 'push'
+      uses: softprops/action-gh-release@v1
+      with:
+        name: Latest
+        files: release/archives/*

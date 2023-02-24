@@ -1,13 +1,10 @@
 #!/bin/bash
 
-os_list="linux darwin windows openbsd freebsd netbsd"
+os_list="linux darwin windows"
 
-arch_linux="386 amd64 arm"
-arch_darwin="amd64"
-arch_windows="386 amd64"
-arch_openbsd="386 amd64 arm"
-arch_freebsd="386 amd64 arm"
-arch_netbsd="386 amd64 arm"
+arch_linux="amd64 arm64"
+arch_darwin="amd64 arm64"
+arch_windows="amd64"
 
 suffix_windows=".exe"
 
